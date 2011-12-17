@@ -93,11 +93,11 @@
 
 (defn trace-word
   [board word]
-  (vec (for [[c pos] (letters-to-positions board)
-             :when (= c (.charAt word 0))
-             :let [trace (trace-word-unwrapper board
-                                               []
-                                               pos
-                                               (.substring word 1))]
-             :when (not (empty? trace))]
-         trace)))
+  (for [[c pos] (letters-to-positions board)
+        :when (= c (.charAt word 0))
+        :let [trace (trace-word-unwrapper board
+                                          []
+                                          pos
+                                          (.substring word 1))]
+        :when (not (empty? trace))]
+    trace))

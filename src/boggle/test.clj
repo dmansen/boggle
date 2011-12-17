@@ -21,6 +21,7 @@
   [board trace word]
   (cond
    (empty? word) true
+   (empty? trace) false
    (not= (letter-at board (first trace)) (.charAt word 0)) false
    true (trace-accurate? board (rest trace) (.substring word 1))))
 
