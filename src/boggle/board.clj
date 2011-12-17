@@ -2,19 +2,20 @@
 
 (defn make-board
   [vec]
-  "given a vector, constructs a board out of it"
+  "Given a vector, constructs a board out of it"
   vec)
 
 (defn letters
-  "gets the letters on the board, as a vector"
+  "Gets the letters on the board, as a vector"
   [board]
   board)
 
 (defn length
-  "one side of the board"
+  "Length of one side of the board"
   [board]
   (int (Math/sqrt (count board))))
 
 (defn letter-at
+  "Given a board and an [x y] coordinate, returns the character in that position"
   [board [x y]]
   (board (+ x (* y (length board)))))

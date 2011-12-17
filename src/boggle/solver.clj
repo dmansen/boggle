@@ -19,7 +19,7 @@
            [x (inc y)]
            [(dec x) (inc y)]]))
 
-(defn- all-positions
+(defn- positions
   "returns a seq of all positions on the board"
   [board]
   (for [y (range 0 (length board))
@@ -44,13 +44,13 @@
                   (not (some #{pos} trace))))
                ns)))))
 
-(defn- letters-to-positions
+(defn- letter-positions
   [board]
   (map #(vector %1 %2)
        board
-       (all-positions board)))
+       (positions board)))
 
-(defn- trace-word-starting-at
+(defn- trace-word-from
   "Given a starting trace, finds all valid traces of that word on the board"
   [board trace word]
   (if (empty? word)
@@ -62,24 +62,27 @@
                           trace
                           (last trace)
                           word)]
-       (trace-word-starting-at board
-                               (conj trace next-pos)
-                               (.substring word 1))))))
+       (trace-word-from board
+                        (conj trace next-pos)
+                        (.substring word 1))))))
 
 (defn trace-word
   "Given a boggle board and a word, finds all ways of creating that word on the board"
   [board word]
-  (apply concat (for [[c pos] (letters-to-positions board)
+  (apply concat (for [[c pos] (letter-positions board)
                       :when (= c (.charAt word 0))]
-                  (trace-word-starting-at board
-                                          [pos]
-                                          (.substring word 1)))))
+                  (trace-word-from board
+                                   [pos]
+                                   (.substring word 1)))))
 
 (defn find-words
+  "Given a dictionary and a word, returns a map from each valid word to a list of ways to find that word"
   [dict board]
-  (for [c (keys dict)
-        :when (some #{c} (letters board))
-        word (words-starting-with dict c)
-        :let [traces (trace-word board word)]
-        :when (not (empty? (flatten traces)))]
-    [word traces]))
+  (let [word-vec (for [c (keys dict)
+                       :when (some #{c} (letters board))
+                       word (words-starting-with dict c)
+                       :let [traces (trace-word board word)]
+                       :when (not (empty? (flatten traces)))]
+                   [word traces])]
+    ; This part creates the map from the [[word traces]..] vector
+    (zipmap (map first word-vec) (map second word-vec))))
