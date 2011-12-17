@@ -1,10 +1,9 @@
 (ns boggle.board)
 
-(def sample-board
-  [\E \H \C \A
-   \G \D \R \I
-   \E \I \M \O
-   \T \O \A \E])
+(defn letters
+  "gets the letters on the board"
+  [board]
+  board)
 
 (defn board-length
   "one side of the board"
@@ -25,14 +24,14 @@
                  (> y -1)
                  (< x (board-length board))
                  (< y (board-length board))))
-          [[y (dec x)]
-           [(dec y) (dec x)]
-           [(dec y) x]
-           [(dec y) (inc x)]
-           [y (inc x)]
-           [(inc y) (inc x)]
-           [(inc y) x]
-           [(inc y) (dec x)]]))
+          [[(dec x) y]
+           [(dec x) (dec y)]
+           [x (dec y)]
+           [(inc x) (dec y)]
+           [(inc x) y]
+           [(inc x) (inc y)]
+           [x (inc y)]
+           [(dec x) (inc y)]]))
 
 (defn neighbors
   "Given a board and a position, builds the neighbor set for the letter at that position on the board."
@@ -44,8 +43,8 @@
 (defn all-positions
   "returns a vector of all positions on the board"
   [board]
-  (vec (for [x (range 0 (board-length board))
-             y (range 0 (board-length board))]
+  (vec (for [y (range 0 (board-length board))
+             x (range 0 (board-length board))]
          [x y])))
 
 (defn neighbor-map
@@ -61,25 +60,15 @@
 
 (defn next-letter-options
   "returns a vector of possible positions to continue the trace"
-  [board current-pos word]
+  [board trace current-pos word]
   (vec (map #(% 1)
             (let [ns (neighbors-at sample-board current-pos)]
               (filter
                (fn [[letter pos]]
-                 (= (.charAt word 0) letter))
+                 (and
+                  (= (.charAt word 0) letter)
+                  (not (some #{pos} trace))))
                ns)))))
-
-(defn trace-word-inner
-  [board trace current-pos word]
-  (if (empty? word)
-    trace
-    (let [opts (next-letter-options board current-pos word)]
-      (if (empty? opts)
-        nil
-        (recur board
-               (conj trace (opts 0))
-               (opts 0)
-               (.substring word 1))))))
 
 (defn letters-to-positions
   [board]
@@ -87,12 +76,33 @@
        board
        (all-positions board)))
 
+(defn comp-n
+  "composes f with the argument n times"
+  [f n x]
+  (if (= 0 n)
+    x
+    (recur f (dec n) (f x))))
+
+(defn trace-word-inner
+  [board trace current-pos word]
+  (if (empty? word)
+    (conj trace current-pos)
+    (for [next-pos (next-letter-options board trace current-pos word)]
+      (trace-word-inner board
+                        (conj trace current-pos)
+                        next-pos
+                        (.substring word 1)))))
+
+(defn trace-word-unwrapper
+  [board trace current-pos word]
+  "need to do this because the inner wrapper keeps wrapping the results in more and more lists...this is probably a dumb way of doing this"
+  (vec (comp-n first (.length word)
+               (trace-word-inner board trace current-pos word))))
+
 (defn trace-word
   [board word]
-  (let [starting-options
-        (filter (fn [[c pos]]
-                  (= c (.charAt word 0))) (letters-to-positions board))]
-    (map
-     (fn [[c pos]]
-       (trace-word-inner board [pos] pos (.substring word 1)))
-     starting-options)))
+  (vec (for [[c pos] (letters-to-positions board)
+             :when (= c (.charAt word 0))
+             :let [trace (trace-word-unwrapper board [] pos (.substring word 1))]
+             :when (not (empty? trace))]
+         trace)))
