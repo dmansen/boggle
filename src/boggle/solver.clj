@@ -8,8 +8,8 @@
   (filter (fn [[x y]]
             (and (> x -1)
                  (> y -1)
-                 (< x (board-length board))
-                 (< y (board-length board))))
+                 (< x (length board))
+                 (< y (length board))))
           [[(dec x) y]
            [(dec x) (dec y)]
            [x (dec y)]
@@ -22,8 +22,8 @@
 (defn- all-positions
   "returns a seq of all positions on the board"
   [board]
-  (for [y (range 0 (board-length board))
-        x (range 0 (board-length board))]
+  (for [y (range 0 (length board))
+        x (range 0 (length board))]
     [x y]))
 
 (defn- neighbors

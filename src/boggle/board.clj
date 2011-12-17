@@ -10,11 +10,11 @@
   [board]
   board)
 
-(defn board-length
+(defn length
   "one side of the board"
   [board]
   (int (Math/sqrt (count board))))
 
 (defn letter-at
   [board [x y]]
-  (board (+ x (* y (board-length board)))))
+  (board (+ x (* y (length board)))))
