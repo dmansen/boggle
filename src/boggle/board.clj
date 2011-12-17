@@ -1,4 +1,4 @@
-(ns boggle.core)
+(ns boggle.board)
 
 (def sample-board
   [\E \H \C \A
@@ -16,10 +16,6 @@
   (board (+ x (* y (board-length board)))))
 
 (def letter-and-neighbors-at letter-at)
-
-(defn neighbors-at
-  [board pos]
-  ((letter-and-neighbors-at (neighbor-map board) pos) 1))
 
 (defn neighbor-positions
   "Ugly function, so it's here to not look at again. Given a board and a position, returns a vector of all valid neighbor positions."
@@ -59,17 +55,44 @@
               [(letter-at board pos) (neighbors board pos)])
             (all-positions board))))
 
+(defn neighbors-at
+  [board pos]
+  ((letter-and-neighbors-at (neighbor-map board) pos) 1))
+
+(defn next-letter-options
+  "returns a vector of possible positions to continue the trace"
+  [board current-pos word]
+  (vec (map #(% 1)
+            (let [ns (neighbors-at sample-board current-pos)]
+              (filter
+               (fn [[letter pos]]
+                 (= (.charAt word 0) letter))
+               ns)))))
+
 (defn trace-word-inner
   [board trace current-pos word]
   (if (empty? word)
     trace
-    (let [first-char (.charAt word 0)
-          n-map (neighbor-map sample-board)]
-      (let [[cur-letter neighbors]
-            (letter-and-neighbors-at n-map current-pos)]
-        (if (and (some #{first-char} (flatten (map keys neighbors)))
-                 (not (some #{current-pos} trace)))
-          (recur board (conj trace (neighbors first-char))
-                 current-pos
-                 (.substring word 1))
-          nil)))))
+    (let [opts (next-letter-options board current-pos word)]
+      (if (empty? opts)
+        nil
+        (recur board
+               (conj trace (opts 0))
+               (opts 0)
+               (.substring word 1))))))
+
+(defn letters-to-positions
+  [board]
+  (map (fn [x y] [x y])
+       board
+       (all-positions board)))
+
+(defn trace-word
+  [board word]
+  (let [starting-options
+        (filter (fn [[c pos]]
+                  (= c (.charAt word 0))) (letters-to-positions board))]
+    (map
+     (fn [[c pos]]
+       (trace-word-inner board [pos] pos (.substring word 1)))
+     starting-options)))

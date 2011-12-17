@@ -8,7 +8,7 @@
        (< (.length s) 6)))
 
 (defn words-starting-with
-  "List of words that start with the specified letter, from the dictionary provided."
+  "Set of words that start with the specified letter, from the dictionary provided."
   [dict char]
   (get dict char))
 
