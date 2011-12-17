@@ -5,7 +5,7 @@
   [s]
   (and (java.util.regex.Pattern/matches "[A-Z]*" s)
        (> (.length s) 2)
-       (< (.length s) 6)))
+       (< (.length s) 8)))
 
 (defn words-starting-with
   "Set of words that start with the specified letter, from the dictionary provided."
