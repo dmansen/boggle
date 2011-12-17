@@ -17,8 +17,8 @@
 (defn trace-accurate?
   [board trace word]
   (cond
-   (empty? word) true
-   (empty? trace) false
+   (and (empty? trace) (empty? word)) true
+   (or (empty? trace) (empty? word)) false
    (not= (letter-at board (first trace)) (.charAt word 0)) false
    true (trace-accurate? board (rest trace) (.substring word 1))))
 

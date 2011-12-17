@@ -72,7 +72,7 @@
   [board trace word]
   (let [current-pos (last trace)]
    (if (empty? word)
-     trace
+     [trace]
      (apply concat
             (for [next-pos
                   (next-letter-options board trace current-pos word)]
@@ -83,8 +83,8 @@
 (defn trace-word
   "Given a boggle board and a word, finds all ways of creating that word on the board"
   [board word]
-  (for [[c pos] (letters-to-positions board)
-        :when (= c (.charAt word 0))]
-    (trace-word-inner board
-                      [pos]
-                      (.substring word 1))))
+  (apply concat (for [[c pos] (letters-to-positions board)
+                      :when (= c (.charAt word 0))]
+                  (trace-word-inner board
+                                    [pos]
+                                    (.substring word 1)))))
