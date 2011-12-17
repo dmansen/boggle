@@ -6,21 +6,21 @@ A solver for boggle which uses persistent data structures and other cool crap.
 
 Make a board:
 
-  (def sample-board
-    (boggle.board/make-board 
-      [\E \H \C \A
-       \G \D \R \I
-       \E \I \M \O
-       \T \O \A \E]))
+    (def sample-board
+      (boggle.board/make-board 
+        [\E \H \C \A
+         \G \D \R \I
+         \E \I \M \O
+         \T \O \A \E]))
 
 Load the dictionary:
 
-  (def dict
-    (boggle.dictionary/load-dictionary "/usr/share/dict/words"))
+    (def dict
+      (boggle.dictionary/load-dictionary "/usr/share/dict/words"))
 
 Solve it!
 
-  (boggle.solver/find-words dict sample-board)
+    (boggle.solver/find-words dict sample-board)
 
 ## License
 
