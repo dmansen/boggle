@@ -1,6 +1,5 @@
 (ns boggle.test
-  (:use [boggle.main]
-        [boggle.dictionary]
+  (:use [boggle.dictionary]
         [boggle.board]))
 
 (defn create-sample-board
