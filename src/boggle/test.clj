@@ -16,3 +16,17 @@
 (defn results
   []
   (find-words the-dict sample-board))
+
+(defn trace-accurate?
+  [board trace word]
+  (cond
+   (empty? word) true
+   (not= (letter-at board (first trace)) (.charAt word 0)) false
+   true (trace-accurate? board (rest trace) (.substring word 1))))
+
+(defn audit-results
+  [board results]
+  (for [[word traces] results
+        trace traces
+        :when (not (trace-accurate? board trace word))]
+    [:fail trace word]))
