@@ -5,8 +5,8 @@
   "given a vector, constructs a board out of it"
   vec)
 
-(defn- letters
-  "gets the letters on the board"
+(defn letters
+  "gets the letters on the board, as a vector"
   [board]
   board)
 
