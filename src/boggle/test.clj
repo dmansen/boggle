@@ -10,7 +10,8 @@
                \E \I \M \O
                \T \O \A \E]))
 
-(def the-dict
+(defn create-dict
+  []
   (load-dictionary "/usr/share/dict/words"))
 
 (defn results
