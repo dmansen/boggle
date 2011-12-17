@@ -1,5 +1,10 @@
 (ns boggle.board)
 
+(defn make-board
+  [vec]
+  "given a vector, constructs a board out of it"
+  vec)
+
 (defn- letters
   "gets the letters on the board"
   [board]

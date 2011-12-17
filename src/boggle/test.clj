@@ -1,12 +1,14 @@
 (ns boggle.test
   (:use [boggle.main]
-        [boggle.dictionary]))
+        [boggle.dictionary]
+        [boggle.board]))
 
-(def sample-board
-  [\E \H \C \A
-   \G \D \R \I
-   \E \I \M \O
-   \T \O \A \E])
+(defn create-sample-board
+  []
+  (make-board [\E \H \C \A
+               \G \D \R \I
+               \E \I \M \O
+               \T \O \A \E]))
 
 (def the-dict
   (load-dictionary "/usr/share/dict/words"))
