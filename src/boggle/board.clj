@@ -19,7 +19,7 @@
   [board [x y]]
   (board (+ x (* y (board-length board)))))
 
-(defn- neighbor-positions
+(defn neighbor-positions
   "Ugly function, so it's here to not look at again. Given a board and a position, returns a vector of all valid neighbor positions."
   [board [x y]]
   (filter (fn [[x y]]
@@ -49,11 +49,11 @@
    (fn [pos] [(letter-at board pos) pos])
    (neighbor-positions board pos)))
 
-(defn- next-letter-options
+(defn next-letter-options
   "returns a vector of possible positions to continue the trace"
   [board trace current-pos word]
   (vec (map second
-            (let [ns (neighbors sample-board current-pos)]
+            (let [ns (neighbors board current-pos)]
               (filter
                (fn [[letter pos]]
                  (and
@@ -67,37 +67,24 @@
        board
        (all-positions board)))
 
-(defn- comp-n
-  "composes f with the argument n times"
-  [f n x]
-  (if (= 0 n)
-    x
-    (recur f (dec n) (f x))))
-
-(defn- trace-word-inner
-  [board trace current-pos word]
-  (if (empty? word)
-    (conj trace current-pos)
-    (for [next-pos
-          (next-letter-options board trace current-pos word)]
-      (trace-word-inner board
-                        (conj trace current-pos)
-                        next-pos
-                        (.substring word 1)))))
-
-(defn- trace-word-unwrapper
-  [board trace current-pos word]
-  "need to do this because the inner wrapper keeps wrapping the results in more and more lists...this is probably a dumb way of doing this"
-  (vec (comp-n first (.length word)
-               (trace-word-inner board trace current-pos word))))
+(defn trace-word-inner
+  "Given a starting trace, finds all valid traces of that word on the board"
+  [board trace word]
+  (let [current-pos (last trace)]
+   (if (empty? word)
+     trace
+     (apply concat
+            (for [next-pos
+                  (next-letter-options board trace current-pos word)]
+              (trace-word-inner board
+                                (conj trace next-pos)
+                                (.substring word 1)))))))
 
 (defn trace-word
+  "Given a boggle board and a word, finds all ways of creating that word on the board"
   [board word]
   (for [[c pos] (letters-to-positions board)
-        :when (= c (.charAt word 0))
-        :let [trace (trace-word-unwrapper board
-                                          []
-                                          pos
-                                          (.substring word 1))]
-        :when (not (empty? trace))]
-    trace))
+        :when (= c (.charAt word 0))]
+    (trace-word-inner board
+                      [pos]
+                      (.substring word 1))))

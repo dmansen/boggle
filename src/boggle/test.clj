@@ -14,10 +14,6 @@
   []
   (load-dictionary "/usr/share/dict/words"))
 
-(defn results
-  []
-  (find-words the-dict sample-board))
-
 (defn trace-accurate?
   [board trace word]
   (cond
