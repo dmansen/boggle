@@ -35,14 +35,14 @@
 (defn- valid-choices
   "returns a vector of possible positions to continue the trace"
   [board trace current-pos word]
-  (vec (map second
-            (let [ns (neighbors board current-pos)]
-              (filter
-               (fn [[letter pos]]
-                 (and
-                  (= (.charAt word 0) letter)
-                  (not (some #{pos} trace))))
-               ns)))))
+  (map second
+       (let [ns (neighbors board current-pos)]
+         (filter
+          (fn [[letter pos]]
+            (and
+             (= (.charAt word 0) letter)
+             (not (some #{pos} trace))))
+          ns))))
 
 (defn- letter-positions
   [board]
